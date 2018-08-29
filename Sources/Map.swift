@@ -104,7 +104,7 @@ public final class Map {
 			// do this pre-check for performance reasons
 			if keyIsNested {
 				// break down the components of the key that are separated by delimiter
-				(isKeyPresent, currentValue) = valueFor(ArraySlice(key.components(separatedBy: delimiter)), dictionary: JSON)
+				(isKeyPresent, currentValue) = valueFor(Array(ArraySlice(key.components(separatedBy: delimiter))), dictionary: JSON)
 			} else {
 				let object = JSON[key]
 				let isNSNull = object is NSNull
@@ -147,7 +147,7 @@ public final class Map {
 }
 
 /// Fetch value from JSON dictionary, loop through keyPathComponents until we reach the desired object
-private func valueFor(_ keyPathComponents: ArraySlice<String>, dictionary: [String: Any]) -> (Bool, Any?) {
+private func valueFor(_ keyPathComponents: [String], dictionary: [String: Any]) -> (Bool, Any?) {
 	// Implement it as a tail recursive function.
 	if keyPathComponents.isEmpty {
 		return (false, nil)
@@ -160,10 +160,10 @@ private func valueFor(_ keyPathComponents: ArraySlice<String>, dictionary: [Stri
 			return (isTail, nil)
 		} else if keyPathComponents.count > 1, let dict = object as? [String: Any] {
 			let tail = keyPathComponents.dropFirst()
-			return valueFor(tail, dictionary: dict)
+			return valueFor(Array(tail), dictionary: dict)
 		} else if keyPathComponents.count > 1, let array = object as? [Any] {
 			let tail = keyPathComponents.dropFirst()
-			return valueFor(tail, array: array)
+			return valueFor(Array(tail), array: array)
 		} else {
 			return (isTail && object != nil, object)
 		}
@@ -173,7 +173,7 @@ private func valueFor(_ keyPathComponents: ArraySlice<String>, dictionary: [Stri
 }
 
 /// Fetch value from JSON Array, loop through keyPathComponents them until we reach the desired object
-private func valueFor(_ keyPathComponents: ArraySlice<String>, array: [Any]) -> (Bool, Any?) {
+private func valueFor(_ keyPathComponents: [String], array: [Any]) -> (Bool, Any?) {
 	// Implement it as a tail recursive function.
 	
 	if keyPathComponents.isEmpty {
@@ -191,10 +191,10 @@ private func valueFor(_ keyPathComponents: ArraySlice<String>, array: [Any]) -> 
 			return (isTail, nil)
 		} else if keyPathComponents.count > 1, let array = object as? [Any]  {
 			let tail = keyPathComponents.dropFirst()
-			return valueFor(tail, array: array)
+			return valueFor(Array(tail), array: array)
 		} else if  keyPathComponents.count > 1, let dict = object as? [String: Any] {
 			let tail = keyPathComponents.dropFirst()
-			return valueFor(tail, dictionary: dict)
+			return valueFor(Array(tail), dictionary: dict)
 		} else {
 			return (isTail, object)
 		}

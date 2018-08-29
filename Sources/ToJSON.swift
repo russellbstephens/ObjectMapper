@@ -34,14 +34,14 @@ private func setValue(_ value: Any, map: Map) {
 
 private func setValue(_ value: Any, key: String, checkForNestedKeys: Bool, delimiter: String, dictionary: inout [String : Any]) {
 	if checkForNestedKeys {
-		let keyComponents = ArraySlice(key.components(separatedBy: delimiter).filter { !$0.isEmpty }.map { $0 })
+		let keyComponents = Array(ArraySlice(key.components(separatedBy: delimiter)).filter { !$0.isEmpty }.map { $0 })
 		setValue(value, forKeyPathComponents: keyComponents, dictionary: &dictionary)
 	} else {
 		dictionary[key] = value
 	}
 }
 
-private func setValue(_ value: Any, forKeyPathComponents components: ArraySlice<String>, dictionary: inout [String : Any]) {
+private func setValue(_ value: Any, forKeyPathComponents components: [String], dictionary: inout [String : Any]) {
 	if components.isEmpty {
 		return
 	}
@@ -56,7 +56,7 @@ private func setValue(_ value: Any, forKeyPathComponents components: ArraySlice<
 			child = [:]
 		}
 
-		let tail = components.dropFirst()
+		let tail = Array(components.dropFirst())
 		setValue(value, forKeyPathComponents: tail, dictionary: &child!)
 
 		dictionary[String(head)] = child
